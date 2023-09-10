@@ -11,7 +11,7 @@ namespace AzulConsole
 			try
 			{
                 Client pos = new("COM4", "C:\\Temp\\Azul");
-                SaleRequest q = new(0.01);
+                SaleRequest q = new(1.00);
                 BaseResponse r = pos.Send(q);
                 Console.WriteLine($"AID            = {r.AID}");
                 Console.WriteLine($"BatchNumber    = {r.BatchNumber}");
