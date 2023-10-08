@@ -8,6 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ECRti">
+      <HintPath>D:\Datos\Programas\Cardnet\Integracion CardNet 4.1.2.1\Integracion CardNet 4.1.2.1\Código Fuente\ECRti\bin\Debug\ECRti.dll</HintPath>
+    </Reference>
     <Reference Include="ECRti.Framework">
       <HintPath>..\..\..\..\Program Files (x86)\Consorcio de Tarjetas Dominicanas, S.A\ECRti.Framework.dll</HintPath>
     </Reference>
