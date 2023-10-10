@@ -20,43 +20,7 @@ namespace CarnetConsole
         {
             try
             {
-                var ips = GetLocalIPAdressV4Object();
-
-                foreach (var item in ips)
-                    Console.WriteLine(item.ToString());
-
-                Console.ReadLine();
-
-                Ethernet ethernet = new(new IPEndPoint(ips[6], int.Parse(portNumberLocal)), new IPEndPoint(long.Parse(ipRemota.Replace(".", "")), int.Parse(portNumberRemote)), timeOut);
-                Console.WriteLine("Ethernet:");
-                
-                Console.ReadLine();
-
-                EthernetCommunication ethernetCommunication = new(ethernet);
-                Console.WriteLine("EthernetCommunication");
-                
-                Console.ReadLine();
-
-                var transaction = new TransactionDto
-                {
-                    TransactionType = TransactionTypes.NormalSale,
-                    MultiMerchantID = 0,
-                    MultiAcquirerID = 0,
-                    TransactionAmount = 100,
-                    TransactionITBIS = 0,
-                    TransactionOtherTaxes = 0,
-                    AuthorizationNumber = "",
-                    Host = CardDto.Hosts.Credit,
-                    ReferenceNumber = 0
-                };
-                Console.WriteLine("TransactionDto");
-                
-                Console.ReadLine();
-
-                var tr = ethernetCommunication.AuthorizeTransaction(ECRti.Dtos.TransactionDto.TransactionTypes.NormalSale, transaction);
-                Console.WriteLine("Tr");
-                
-                Console.ReadLine();
+                ECRtiFramwork();
             }
             catch (Exception ex)
             {
@@ -67,19 +31,20 @@ namespace CarnetConsole
             Console.ReadLine();
         }
 
-        static string ipLocal = "192.168.8.10", portNumberLocal = "2018", ipRemota = "192.168.8.150", portNumberRemote = "7060";
+        static string ipLocal = "10.0.0.19", portNumberLocal = "2018", ipRemota = "10.0.0.122", portNumberRemote = "7060";
         static int timeOut = 180000;
         private static void ECRtiFramwork()
         {
             Core core = new();
 
-            Console.WriteLine(core.SetLocalEndPoint(ipLocal, int.Parse(portNumberLocal)));
-            Console.WriteLine(core.SetRemoteEndPoint(ipRemota, int.Parse(portNumberRemote)));
-            Console.WriteLine(core.SetTimeout(timeOut));
+            Console.WriteLine(JsonConvert.DeserializeObject<CardnetResult>(core.SetLocalEndPoint(ipLocal, int.Parse(portNumberLocal))));
 
-            Console.WriteLine(core.Initialice());
+            Console.WriteLine(JsonConvert.DeserializeObject<CardnetResult>(core.SetRemoteEndPoint(ipRemota, int.Parse(portNumberRemote))));
+            Console.WriteLine(JsonConvert.DeserializeObject<CardnetResult>(core.SetTimeout(timeOut)));
 
-            Console.WriteLine(core.ProcessNormalSale(20000, 0, 0, 100));
+            Console.WriteLine(JsonConvert.DeserializeObject<CardnetResult>(core.Initialice()));
+
+            Console.WriteLine(JsonConvert.DeserializeObject<CardnetResult>(core.ProcessNormalSale(20000, 0, 0, 100)));
         }
 
         private static List<string> GetLocalIPAdressV4()
@@ -105,7 +70,64 @@ namespace CarnetConsole
 
     public class CardnetResult
     {
-        public required string Status { get; set; }
+        public string Status { get; set; }
         public required string[] Messages { get; set; }
+        public Host Host { get; set; }
+        public Mode Mode { get; set; }
+        public Card Card { get; set; }
+        public Transaction Transaction { get; set; }
+        public Dynamiccurrencyconversion DynamicCurrencyConversion { get; set; }
+        public int Batch { get; set; }
+        public string TerminalID { get; set; }
+        public string MerchantID { get; set; }
+        public string Acquired { get; set; }
+        public object Reserved { get; set; }
+        public object Signature { get; set; }
+
+        public override string ToString()
+        {
+            return JsonConvert.SerializeObject(this);
+        }
     }
+
+    public class Host
+    {
+        public int Value { get; set; }
+        public string Description { get; set; }
+    }
+
+    public class Mode
+    {
+        public string Value { get; set; }
+        public string Description { get; set; }
+    }
+
+    public class Card
+    {
+        public string Product { get; set; }
+        public string CardNumber { get; set; }
+        public string HolderName { get; set; }
+    }
+
+    public class Transaction
+    {
+        public string AuthorizationNumber { get; set; }
+        public int Reference { get; set; }
+        public long RetrievalReference { get; set; }
+        public string DataTime { get; set; }
+        public string ApplicationIdentifier { get; set; }
+        public object LoyaltyDeferredNumber { get; set; }
+        public object TID { get; set; }
+    }
+
+    public class Dynamiccurrencyconversion
+    {
+        public object SalesIndicator { get; set; }
+        public object CalculationAccepted { get; set; }
+        public int MarginRate { get; set; }
+        public int Amount { get; set; }
+        public int DisplayRate { get; set; }
+        public object TransactionCurrency { get; set; }
+    }
+
 }
